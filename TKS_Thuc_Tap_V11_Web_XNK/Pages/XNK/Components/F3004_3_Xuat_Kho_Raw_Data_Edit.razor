@@ -1,0 +1,218 @@
+@using TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
+@using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
+@inherits FBase_Edit;
+
+<div class="modal fade show" tabindex="-1" role="dialog" aria-hidden="true" style="display: block; padding-left: 0px; background-color: rgba(10, 10, 10, .8);">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-light">
+				@if (m_objXuat_Kho.Auto_ID != 0)
+				{
+					<h5 class="modal-title">@Get_Language_Data_Field("Hiệu chỉnh")</h5>
+				}
+				else
+				{
+					<h5 class="modal-title">@Get_Language_Data_Field("Thêm mới")</h5>
+				}
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@(()=> Modal_Cancel_2011())">
+				</button>
+			</div>
+
+			@((MarkupString)r_strError)
+
+			<EditForm Model="@m_objXuat_Kho">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-lg-12">
+
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Sản phẩm"):</label>
+								</div>
+								<div class="col-lg-8">
+									@if (!String.IsNullOrWhiteSpace(m_objObject_Delivery_For_Edit.Ten_San_Pham))
+									{
+										<input type="text" value="@m_objXuat_Kho.Ten_San_Pham" class="form-control" disabled>
+									} else
+									{
+										<FControl_San_Pham_Combo m_arrData="@m_arrSan_Pham" @bind-BindingValue="@m_objXuat_Kho.San_Pham_ID"></FControl_San_Pham_Combo>
+
+									}
+								</div>
+							</div>
+
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Số lượng xuất"):</label>
+								</div>
+								<div class="col-lg-8">
+									<input type="number" @bind="@m_objXuat_Kho.SL_Xuat" class="form-control">
+								</div>
+							</div>
+
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Đơn giá xuất"):</label>
+								</div>
+								<div class="col-lg-8">
+									<input type="number" @bind="@m_objXuat_Kho.Don_Gia_Xuat" class="form-control">
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</EditForm>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" @onclick="@Save_Data_2011">@Get_Language_Data_Field("Lưu Thay Đổi")</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+
+	[Parameter]
+	public EventCallback<CEvent_Call_Back> OnClose_2011 { get; set; }
+
+	[Parameter]
+	public bool m_bIs_Edit_Raw_Mode { get; set; }
+
+	[Parameter]
+	public CXNK_Xuat_Kho_Raw_Data m_objObject_Delivery_For_Edit { get; set; }
+
+	private List<CDM_San_Pham> m_arrSan_Pham = new();
+	private CXNK_Xuat_Kho_Raw_Data m_objXuat_Kho = new();
+	// Biến dùng để trả ra hành động của người dùng là cập nhật hay là thêm mới cho form phiếu nhập
+	private string m_strMessage = string.Empty;
+
+	protected override void Init_Data()
+	{
+		CCache_San_Pham.Load_Cache_DM_San_Pham();
+		m_arrSan_Pham = CCache_San_Pham.List_Data();
+		if (m_bIs_Edit_Raw_Mode)
+		{
+			m_objXuat_Kho.Xuat_Kho_ID = 0; // Reset Auto_ID for raw data edit mode
+		}
+		else
+		{
+			m_objXuat_Kho.Xuat_Kho_ID = r_iAuto_ID;
+		}
+	}
+
+	protected override void Load_Data()
+	{
+		if (m_bIs_Edit_Raw_Mode && !String.IsNullOrWhiteSpace(m_objObject_Delivery_For_Edit.Ten_San_Pham))
+		{
+			CUtility.Clone_Entity(m_objObject_Delivery_For_Edit, m_objXuat_Kho);
+			return;
+		}
+
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrData = new();
+		m_objXuat_Kho = v_objCtrData.FQ_734_XKRD_sp_sel_Get_By_ID(m_objObject_Delivery_For_Edit.Auto_ID);
+
+		if (m_objXuat_Kho == null)
+			m_objXuat_Kho = new CXNK_Xuat_Kho_Raw_Data();
+		else
+		{
+			r_bUpdate = true;
+			m_objXuat_Kho.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(m_objXuat_Kho.San_Pham_ID).Ten_San_Pham ?? "";
+
+			// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+			CXNK_Xuat_Kho_Raw_Data v_objClone = new();
+			CUtility.Clone_Entity(m_objXuat_Kho, v_objClone);
+			r_objSource = v_objClone;
+			// End tracking
+		}
+	}
+
+	protected override void Add_Data()
+	{
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrData = new();
+		m_objXuat_Kho.Last_Updated_By = r_strActive_User_Name;
+		m_objXuat_Kho.Last_Updated_By_Function = r_strActive_Function_Code;
+		m_objXuat_Kho.Xuat_Kho_ID = r_iAuto_ID;
+		m_objXuat_Kho.Auto_ID = v_objCtrData.FQ_734_XKRD_sp_ins_Insert(m_objXuat_Kho);
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		r_strAdd_Key = m_objXuat_Kho.Auto_ID.ToString();
+		// End tracking
+		m_strMessage = "Add";
+
+	}
+
+	protected override void Update_Data()
+	{
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrData = new();
+		m_objXuat_Kho.Last_Updated_By = r_strActive_User_Name;
+		m_objXuat_Kho.Last_Updated_By_Function = r_strActive_Function_Code;
+
+		v_objCtrData.FQ_734_XKRD_sp_upd_Update(m_objXuat_Kho);
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		CXNK_Xuat_Kho_Raw_Data v_objClone = new();
+		CUtility.Clone_Entity(m_objXuat_Kho, v_objClone);
+		r_objDes = v_objClone;
+		// End tracking
+		m_strMessage = "Update";
+
+	}
+
+	public Task Modal_Cancel_2011()
+	{
+		var v_evt = new CEvent_Call_Back
+		{
+			Message_ID = (int)EModal_Result.Close_Cancel
+		};
+		return OnClose_2011.InvokeAsync(v_evt);
+	}
+
+	public async Task Save_Data_2011()
+	{
+		if (m_objXuat_Kho.San_Pham_ID == 0)
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Vui lòng chọn sản phẩm");
+			return;
+		}
+
+		if (m_objXuat_Kho.SL_Xuat == 0)
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Số lượng xuất không được bỏ trống");
+			return;
+		}
+
+		if (m_objXuat_Kho.Don_Gia_Xuat == 0)
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Đơn giá xuất không được bỏ trống");
+			return;
+		}
+
+		if (m_bIs_Edit_Raw_Mode)
+		{
+
+			var v_evt = new CEvent_Call_Back
+			{
+				Message_ID = (int)EModal_Result.Close_And_Reload_Data,
+				Object_1 = m_objXuat_Kho
+			};
+			await OnClose_2011.InvokeAsync(v_evt);
+		}
+		else
+		{
+			Console.WriteLine(m_objXuat_Kho);
+			Console.WriteLine("save real data to db");
+			await Save_Data();
+			Console.WriteLine("next");
+			var v_evt = new CEvent_Call_Back
+			{
+				Message_ID = (int)EModal_Result.Close_And_Reload_Data,
+				Object_1 = m_objXuat_Kho,
+				Message_Description = m_strMessage
+			};
+			Console.WriteLine("next");
+			await OnClose_2011.InvokeAsync(v_evt);
+		}
+	}
+}

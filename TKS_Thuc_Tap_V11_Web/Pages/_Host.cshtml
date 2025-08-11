@@ -1,0 +1,33 @@
+﻿@page "/"
+@namespace TKS_Thuc_Tap_V11_Web.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    var routeUrl = "";
+    if (ViewContext.RouteData.Values.ContainsKey("path"))
+        routeUrl = ViewContext.RouteData.Values["path"].ToString().ToLower();
+
+    if (routeUrl.EndsWith("sys/dang_nhap") || routeUrl.EndsWith("sys/permission_error") || routeUrl.EndsWith("sys/dang_xuat")
+        || routeUrl.EndsWith("sys/token_expired_error") || routeUrl.EndsWith("sys/load_cache_error") || routeUrl.EndsWith("sys/queue")
+        )
+        Layout = "_Layout_Blank";
+    else
+        Layout = "_Layout";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+@* For Reports service hosted in the same project: *@
+<script src="/api/reports/resources/js/telerikReportViewer"></script>
+@* For Reports service hosted in another application / Report Server use absolute URI: *@
+@*<script src="https://demos.telerik.com/report-server/api/reports/resources/js/telerikReportViewer"></script>*@
+
+<!-- Kendo UI Core -->
+<script src="https://kendo.cdn.telerik.com/2023.3.1010/js/kendo.all.min.js"></script>
+
+<!-- Kendo UI CSS Theme -->
+<link href="https://kendo.cdn.telerik.com/themes/10.2.0/default/default-ocean-blue.css" rel="stylesheet" />
+
+<script src="_content/Telerik.ReportViewer.Blazor/interop.js" defer></script>
+
+
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />

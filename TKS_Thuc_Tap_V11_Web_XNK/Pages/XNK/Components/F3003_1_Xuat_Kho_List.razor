@@ -1,0 +1,137 @@
+@using TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
+@using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
+@inherits FBase;
+
+@Layout_Default_Filter(grdData, "")
+<div style="padding-top: 10px;"></div>
+
+<div class="row">
+	<div class="col-lg-12">
+		@((MarkupString)r_strError)
+
+		<TelerikGrid Data="@v_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+			<GridExport>
+				<GridExcelExport FileName="Xuat_Kho_Export" AllPages="true" />
+				<GridCsvExport FileName="Xuat_Kho_Export" AllPages="true" />
+			</GridExport>
+			<GridColumns>
+				<GridCheckboxColumn SelectAll="true" CheckBoxOnlySelection="true" Width="30px"></GridCheckboxColumn>
+				<GridColumn Width="60px">
+					<Template>
+						<button class="btn btn-link" @onclick="@(()=> Open_Info((context as CXNK_Xuat_Kho).Auto_ID))">
+							<i class="mdi mdi-eye" style="color: purple;"></i>
+						</button>
+						&nbsp;
+						<button class="btn btn-link" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="mdi mdi-cog-outline" style="color: purple;"></i>
+						</button>
+						<ul class="dropdown-menu">
+							@if (r_objChuc_Nang.Is_Have_Edit_Permission == true)
+							{
+								<li>
+									<button class="dropdown-item" type="button" @onclick="@(()=> Open_Edit((context as CXNK_Xuat_Kho).Auto_ID))"><i class="ri-edit-2-line align-bottom me-1"></i> &nbsp; @Get_Language_Data_Field("Hiệu chỉnh")</button>
+								</li>
+							}
+							@if (r_objChuc_Nang.Is_Have_Delete_Permission == true)
+							{
+								<li>
+									<button class="dropdown-item" type="button" @onclick="@(()=> Delete_Data((context as CXNK_Xuat_Kho).Auto_ID))"><i class="ri-delete-bin-line align-bottom me-1"></i> &nbsp; @Get_Language_Data_Field("Xóa")</button>
+								</li>
+							}
+							@if (r_objChuc_Nang.Is_Have_Delete_Permission == true)
+							{
+								<li>
+									<button class="dropdown-item" type="button" @onclick="@(() => Open_Document((context as CXNK_Xuat_Kho).Auto_ID))">
+										<i class="mdi mdi-printer align-bottom me-1"></i> &nbsp; In phiếu
+									</button>
+								</li>
+							}
+						</ul>
+					</Template>
+				</GridColumn>
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2010", "grdData").Count > 0)
+				{
+					<FCommon_General_Col_Grid m_strFCode="2010" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+				}
+				else
+				{
+					<GridColumn Field="So_Phieu_Xuat_Kho" Title="Số Phiếu Xuất Kho" Width="100px"></GridColumn>
+					<GridColumn Field="Ngay_Xuat_Kho" Title="Ngày Xuất Kho" Width="120px"></GridColumn>
+					<GridColumn Field="Ghi_Chu" Title="Ghi Chú" Width="200px"></GridColumn>
+					<GridColumn Field="" Title=""><FooterTemplate Context="Footer"></FooterTemplate></GridColumn>
+				}
+			</GridColumns>
+		</TelerikGrid>
+	</div>
+</div>
+
+@if (r_bIs_Show_Info == true)
+{
+	<F3003_2_Xuat_Kho_Info r_iAuto_ID="@r_iAuto_ID" OnClose="@Close_Info"></F3003_2_Xuat_Kho_Info>
+}
+
+@if (r_bIs_Show_Help_Guide == true)
+{
+	<FCommon_Help_Guide m_strFCode="@r_strActive_Function_Code" OnClose="@Close_Helpguide"></FCommon_Help_Guide>
+}
+
+@if (r_bIs_Show_Edit == true)
+{
+	<F3003_3_Xuat_Kho_Edit r_iAuto_ID="@r_iAuto_ID" OnClose="@Close_Edit"></F3003_3_Xuat_Kho_Edit>
+}
+
+@if (m_bIs_Show_Document == true)
+{
+	<F3003_4_Xuat_Kho_Document r_iAuto_ID="@r_iAuto_ID" 
+							   m_bIs_Show_Document="@m_bIs_Show_Document"
+							   m_CbOnClose_From_Parent="@Close_Document">
+	</F3003_4_Xuat_Kho_Document>
+}
+
+@code {
+	public List<CXNK_Xuat_Kho> v_arrData = new();
+	TelerikGrid<CXNK_Xuat_Kho> grdData = new();
+    public bool m_bIs_Show_Document { set; get; } = false;
+
+	protected override void Init_Data()
+	{
+
+	}
+
+	protected override void Load_Data()
+	{
+		CXNK_Xuat_Kho_Controller v_objCtrData = new();
+
+		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
+		Format_Grid(grdData);
+
+		v_arrData = v_objCtrData.F3003_sp_sel_List_XK_By_Date_Only(r_objFilter.Date_From, r_objFilter.Date_To);
+	}
+
+	protected override void Delete_Data_Entry(long p_iAuto_ID)
+	{
+		CXNK_Xuat_Kho_Controller v_objCtrData = new();
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		CXNK_Xuat_Kho v_objData = v_objCtrData.FQ_728_XK_sp_sel_Get_By_ID(p_iAuto_ID);
+		if (v_objData != null)
+			r_strDelete_Key = v_objData.So_Phieu_Xuat_Kho;
+		// End tracking
+
+		v_objCtrData.FQ_728_XK_sp_del_Delete_By_ID(p_iAuto_ID, r_strActive_User_Name, r_strActive_Function_Code);
+	}
+
+	public void Open_Document(long p_iAutoID)
+	{
+		r_iAuto_ID = p_iAutoID;
+		m_bIs_Show_Document = true;
+	}
+
+	async Task Close_Document(CEvent_Call_Back p_objEvent)
+	{
+		if (p_objEvent.Message_ID == (int)EModal_Result.Close_And_Reload_Data || p_objEvent.Message_ID == (int)EModal_Result.Close_Cancel)
+		{
+			m_bIs_Show_Document = false;
+		}
+	}
+}

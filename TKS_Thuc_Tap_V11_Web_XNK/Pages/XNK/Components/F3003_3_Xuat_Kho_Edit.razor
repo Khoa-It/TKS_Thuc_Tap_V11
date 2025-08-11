@@ -1,0 +1,384 @@
+@using TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
+@using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
+@inherits FBase_Edit;
+
+<div class="modal fade show" tabindex="-1" role="dialog" aria-hidden="true" style="display: block; padding-left: 0px; background-color: rgba(10, 10, 10, .8);">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-light">
+				@if (r_iAuto_ID != 0)
+				{
+					<h5 class="modal-title">@Get_Language_Data_Field("Hiệu chỉnh")</h5>
+				}
+				else
+				{
+					<h5 class="modal-title">@Get_Language_Data_Field("Thêm mới")</h5>
+				}
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@(()=> Modal_Cancel())">
+				</button>
+			</div>
+
+			@{
+				Check_Exception_Edit_Raw_Mode();
+			}
+
+			@((MarkupString)r_strError)
+
+			<EditForm Model="@m_objXuat_Kho">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Số phiếu xuất kho"):</label>
+								</div>
+								<div class="col-lg-8">
+									<input @ref="txtFocus" @bind="@m_objXuat_Kho.So_Phieu_Xuat_Kho" class="form-control">
+
+								</div>
+							</div>
+
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Kho"):</label>
+								</div>
+								<div class="col-lg-8">
+									<FControl_Kho_Combo m_arrData="@m_arrKho"
+														@bind-BindingValue="@m_objXuat_Kho.Kho_ID">
+									</FControl_Kho_Combo>
+								</div>
+							</div>
+
+
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Ngày xuất kho"):</label>
+								</div>
+								<div class="col-lg-8">
+									<TelerikDatePicker @bind-Value="@m_objXuat_Kho.Ngay_Xuat_Kho" Format="@CConfig.Date_Format_String"></TelerikDatePicker>
+
+								</div>
+							</div>
+
+							<div class="row mb-1">
+								<div class="col-lg-4 col-form-label">
+									<label class="form-label">@Get_Language_Data_Field("Ghi chú"):</label>
+								</div>
+								<div class="col-lg-8">
+									<input @bind="@m_objXuat_Kho.Ghi_Chu" class="form-control">
+
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</EditForm>
+
+			<button type="button" class="btn rounded btn-primary waves-effect waves-light" @onclick="@(() => Open_2011_3_Xuat_Kho_Raw_Data_Edit(0))">
+				<i class="ri-add-circle-fill align-bottom me-1"></i>
+				@Get_Language_Data_Field("Thêm chi tiết phiếu xuất")
+			</button>
+
+			<TelerikGrid Data="@m_arrXuat_Kho_Raw_Data" Height="calc(100vh - 470px)" Resizable="true" Reorderable="true" @ref="@grdXuat_Kho_Raw_Data">
+				<GridExport>
+					<GridExcelExport FileName="Xuat_Kho_Raw_Data_Export" AllPages="true" />
+					<GridCsvExport FileName="Xuat_Kho_Raw_Data_Export" AllPages="true" />
+				</GridExport>
+				<GridColumns>
+					<GridCheckboxColumn SelectAll="true" CheckBoxOnlySelection="true" Width="30px"></GridCheckboxColumn>
+					<GridColumn Width="60px">
+						<Template>
+							<button class="btn btn-link" @onclick="@(() => Open_Info((context as CXNK_Xuat_Kho_Raw_Data).Auto_ID))">
+								<i class="mdi mdi-eye" style="color: purple;"></i>
+							</button>
+							&nbsp;
+							<button class="btn btn-link" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="mdi mdi-cog-outline" style="color: purple;"></i>
+							</button>
+							<ul class="dropdown-menu">
+								@if (r_objChuc_Nang.Is_Have_Edit_Permission == true)
+								{
+									<li>
+										<button class="dropdown-item" type="button" @onclick="@(() => Open_2011_3_Xuat_Kho_Raw_Data_Edit((context as CXNK_Xuat_Kho_Raw_Data).Auto_ID))"><i class="ri-edit-2-line align-bottom me-1"></i> &nbsp; @Get_Language_Data_Field("Hiệu chỉnh")</button>
+									</li>
+								}
+								@if (r_objChuc_Nang.Is_Have_Delete_Permission == true)
+								{
+									<li>
+										<button class="dropdown-item" type="button" @onclick="@(() => Delete_Data((context as CXNK_Xuat_Kho_Raw_Data).Auto_ID))"><i class="ri-delete-bin-line align-bottom me-1"></i> &nbsp; @Get_Language_Data_Field("Xóa")</button>
+									</li>
+								}
+							</ul>
+						</Template>
+					</GridColumn>
+					@if (CCache_Grid_UI_Global.List_Data_By_Code("2011", "grdXuat_Kho_Raw_Data").Count > 0)
+					{
+						<FCommon_General_Col_Grid m_strFCode="2011" m_strTen_Grid="grdXuat_Kho_Raw_Data"></FCommon_General_Col_Grid>
+					}
+					else
+					{
+						<GridColumn Field="Ten_San_Pham" Title="Sản Phẩm" Width="100px"></GridColumn>
+						<GridColumn Field="SL_Xuat" Title="Số lượng xuất" Width="100px"></GridColumn>
+						<GridColumn Field="Don_Gia_Xuat" Title="Đơn Giá Xuất" Width="100px"></GridColumn>
+						<GridColumn Field="" Title=""><FooterTemplate Context="Footer"></FooterTemplate></GridColumn>
+					}
+				</GridColumns>
+			</TelerikGrid>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" @onclick="@Check_Before_Save">@Get_Language_Data_Field("Lưu Thay Đổi")</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@if (m_bIs_Show_2011_3_Xuat_Kho_Raw_Data_Edit == true)
+{
+	if (m_bIs_Edit_Raw_Mode)
+	{
+		<F3004_3_Xuat_Kho_Raw_Data_Edit r_iAuto_ID="@m_objObject_Delivery_For_Edit.Auto_ID"
+										OnClose_2011="@Close_2011_3_Xuat_Kho_Raw_Data_Edit"
+										m_bIs_Edit_Raw_Mode="@m_bIs_Edit_Raw_Mode"
+										m_objObject_Delivery_For_Edit="@m_objObject_Delivery_For_Edit">
+		</F3004_3_Xuat_Kho_Raw_Data_Edit>
+	}
+	else
+	{
+		<F3004_3_Xuat_Kho_Raw_Data_Edit r_iAuto_ID="@r_iAuto_ID"
+										OnClose_2011="@Close_2011_3_Xuat_Kho_Raw_Data_Edit"
+										m_bIs_Edit_Raw_Mode="@m_bIs_Edit_Raw_Mode"
+										m_objObject_Delivery_For_Edit="@m_objObject_Delivery_For_Edit">
+		</F3004_3_Xuat_Kho_Raw_Data_Edit>
+	}
+}
+
+@code {
+	private CXNK_Xuat_Kho m_objXuat_Kho = new();
+	public bool m_bIs_Edit_Raw_Mode = false;
+	private List<CXNK_Xuat_Kho_Raw_Data> m_arrXuat_Kho_Raw_Data = new();
+	private TelerikGrid<CXNK_Xuat_Kho_Raw_Data> grdXuat_Kho_Raw_Data;
+	private bool m_bIs_Show_2011_3_Xuat_Kho_Raw_Data_Edit = false;
+	private List<CDM_Kho> m_arrKho = new();
+
+
+	// index của mảng raw data xuat kho, dùng để tạo Auto_ID tạm thời cho các bản ghi mới
+	private int v_iIndex_Xuat_Kho_Raw = 1;
+
+	// Biến này dùng để lưu index của raw data xuat kho khi mở form hiệu chỉnh
+	public CXNK_Xuat_Kho_Raw_Data m_objObject_Delivery_For_Edit = new();
+
+	protected override void Init_Data()
+	{
+		CCache_Kho.Load_Cache_DM_Kho();
+        CCache_San_Pham.Load_Cache_DM_San_Pham();
+		m_arrKho = CCache_Kho.List_Data();
+	}
+
+	protected override void Load_Data()
+	{
+		// phần phiếu xuất
+		CXNK_Xuat_Kho_Controller v_objCtrXuat_Kho = new();
+		m_objXuat_Kho = v_objCtrXuat_Kho.FQ_728_XK_sp_sel_Get_By_ID(r_iAuto_ID);
+
+		if (m_objXuat_Kho == null)
+			m_objXuat_Kho = new CXNK_Xuat_Kho();
+		else
+		{
+			r_bUpdate = true;
+			// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+			CXNK_Xuat_Kho v_objClone = new();
+			CUtility.Clone_Entity(m_objXuat_Kho, v_objClone);
+			r_objSource = v_objClone;
+			// End tracking
+		}
+
+		// phần raw data
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrXuat_Kho_Raw_Data = new();
+
+		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
+		Format_Grid(grdXuat_Kho_Raw_Data);
+
+		if (r_iAuto_ID != 0)
+		{
+			m_arrXuat_Kho_Raw_Data = v_objCtrXuat_Kho_Raw_Data.F3003_sp_sel_List_XKRD_By_Xuat_Kho_ID(r_iAuto_ID);
+			foreach (var item in m_arrXuat_Kho_Raw_Data)
+			{
+				item.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(item.San_Pham_ID).Ten_San_Pham ?? "";
+			}
+		}
+	}
+
+	protected override void Add_Data()
+	{
+		CXNK_Xuat_Kho_Controller v_objCtrXuat_Kho = new();
+		// m_objXuat_Kho.Kho_ID = r_iKho_ID;
+		m_objXuat_Kho.Last_Updated_By = r_strActive_User_Name;
+		m_objXuat_Kho.Last_Updated_By_Function = r_strActive_Function_Code;
+
+		m_objXuat_Kho.Auto_ID = r_iAuto_ID = v_objCtrXuat_Kho.FQ_728_XK_sp_ins_Insert(m_objXuat_Kho);
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		r_strAdd_Key = m_objXuat_Kho.So_Phieu_Xuat_Kho;
+		// End tracking
+
+		// Phần lưu thông tin raw data xuất kho - chi tiết phiếu xuất
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrXuat_Kho_Raw_Data = new();
+		foreach (var item in m_arrXuat_Kho_Raw_Data)
+		{
+			item.Xuat_Kho_ID = r_iAuto_ID; // Gán ID phiếu xuất kho cho raw data
+			item.Last_Updated_By = r_strActive_User_Name;
+			item.Last_Updated_By_Function = r_strActive_Function_Code;
+			item.Auto_ID = v_objCtrXuat_Kho_Raw_Data.FQ_734_XKRD_sp_ins_Insert(item);
+			// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+			r_strAdd_Key = item.Auto_ID.ToString();
+			// End tracking
+		}
+
+		m_bIs_Show_2011_3_Xuat_Kho_Raw_Data_Edit = false; // Reset chế độ hiệu chỉnh raw data sau khi lưu
+	}
+
+	protected override void Update_Data()
+	{
+		CXNK_Xuat_Kho_Controller v_objCtrXuat_Kho = new();
+		m_objXuat_Kho.Last_Updated_By = r_strActive_User_Name;
+		m_objXuat_Kho.Last_Updated_By_Function = r_strActive_Function_Code;
+
+		v_objCtrXuat_Kho.FQ_728_XK_sp_upd_Update(m_objXuat_Kho);
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		CXNK_Xuat_Kho v_objClone = new();
+		CUtility.Clone_Entity(m_objXuat_Kho, v_objClone);
+		r_objDes = v_objClone;
+		// End tracking
+
+	}
+
+	void Open_2011_3_Xuat_Kho_Raw_Data_Edit(long p_iAuto_ID = 0)
+	{
+		
+		m_bIs_Show_2011_3_Xuat_Kho_Raw_Data_Edit = true;
+		if (r_iAuto_ID == 0) m_bIs_Edit_Raw_Mode = true;
+        else m_bIs_Edit_Raw_Mode = false;
+
+		if (p_iAuto_ID != 0)
+			m_objObject_Delivery_For_Edit = m_arrXuat_Kho_Raw_Data.Find(x => x.Auto_ID == p_iAuto_ID);
+
+		StateHasChanged();
+	}
+
+	async Task Close_2011_3_Xuat_Kho_Raw_Data_Edit(CEvent_Call_Back p_objEvent)
+	{
+		if (p_objEvent.Message_ID == (int)EModal_Result.Close_And_Reload_Data || p_objEvent.Message_ID == (int)EModal_Result.Close_Cancel)
+		{
+			m_objObject_Delivery_For_Edit = new();
+		}
+
+		if (p_objEvent.Message_ID == (int)EModal_Result.Close_And_Reload_Data)
+		{
+			if (p_objEvent.Object_1 is CXNK_Xuat_Kho_Raw_Data && m_bIs_Edit_Raw_Mode)
+			{
+				CXNK_Xuat_Kho_Raw_Data m_objHandle = p_objEvent.Object_1 as CXNK_Xuat_Kho_Raw_Data;
+				if (m_objHandle.Auto_ID != 0)
+				{
+					CXNK_Xuat_Kho_Raw_Data v_objHandle = m_arrXuat_Kho_Raw_Data.Find(x => x.Auto_ID == m_objHandle.Auto_ID);
+					CUtility.Clone_Entity(m_objHandle, v_objHandle);
+					m_objObject_Delivery_For_Edit = new();
+					grdXuat_Kho_Raw_Data.Rebind();
+				}
+				else
+				{
+					m_objHandle.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(m_objHandle.San_Pham_ID).Ten_San_Pham ?? "";
+					// Tạo Auto_ID tạm thời để hiển thị trên grid
+					m_objHandle.Auto_ID = v_iIndex_Xuat_Kho_Raw++;
+					m_arrXuat_Kho_Raw_Data.Add(m_objHandle);
+					grdXuat_Kho_Raw_Data.Rebind();
+				}
+			}
+			else
+			{
+				// Nếu không phải là chế độ hiệu chỉnh raw data, thì chỉ cần cập nhật lại dữ liệu
+				CXNK_Xuat_Kho_Raw_Data v_objReceiveFromParent = p_objEvent.Object_1 as CXNK_Xuat_Kho_Raw_Data;
+				if (p_objEvent.Message_Description == "Add")
+				{
+					v_objReceiveFromParent.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(v_objReceiveFromParent.San_Pham_ID).Ten_San_Pham ?? "";
+					m_arrXuat_Kho_Raw_Data.Add(v_objReceiveFromParent);
+					grdXuat_Kho_Raw_Data.Rebind();
+				}
+				else
+				{
+					CXNK_Xuat_Kho_Raw_Data v_objHandle = m_arrXuat_Kho_Raw_Data.Find(x => x.Auto_ID == v_objReceiveFromParent.Auto_ID);
+					CUtility.Clone_Entity(v_objReceiveFromParent, v_objHandle);
+					v_objHandle.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(v_objHandle.San_Pham_ID).Ten_San_Pham ?? "";
+					m_objObject_Delivery_For_Edit = new();
+					grdXuat_Kho_Raw_Data.Rebind();
+				}
+			}
+		}
+		m_bIs_Show_2011_3_Xuat_Kho_Raw_Data_Edit = false;
+	}
+
+	// hàm kiểm tra trước khi lưu dữ liệu
+	public async Task Check_Before_Save()
+	{
+		if (m_objXuat_Kho.So_Phieu_Xuat_Kho == "")
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Số phiếu xuất kho không được để trống");
+			return;
+		}
+		if(m_objXuat_Kho.Kho_ID == 0)
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Vui lòng chọn kho");
+			return;
+		}
+
+		if (m_objXuat_Kho.Ngay_Xuat_Kho == null)
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Ngày xuât kho không được để trống");
+			return;
+		}
+
+		if (m_arrXuat_Kho_Raw_Data.Count == 0)
+		{
+			r_strError = CCommonFunction.Set_Error_MessageBox("Vui lòng thêm chi tiết phiếu xuất");
+			return;
+		}
+		
+		Console.WriteLine(m_objXuat_Kho);
+		await Save_Data();
+	}
+
+	protected override void Delete_Data_Entry(long p_iAuto_ID)
+	{
+		Console.WriteLine("Delete_Data_Entry - 2011");
+		if (m_bIs_Edit_Raw_Mode)
+		{
+			CXNK_Xuat_Kho_Raw_Data v_objHandle = m_arrXuat_Kho_Raw_Data.Find(x => x.Auto_ID == p_iAuto_ID);
+			m_arrXuat_Kho_Raw_Data.Remove(v_objHandle);
+			grdXuat_Kho_Raw_Data.Rebind();
+			Console.WriteLine(m_arrXuat_Kho_Raw_Data.Count);
+			throw new Exception("");
+		}
+
+		Console.WriteLine("next");
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrXuat_Kho_Raw_Data = new();
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		CXNK_Xuat_Kho_Raw_Data v_objData = v_objCtrXuat_Kho_Raw_Data.FQ_734_XKRD_sp_sel_Get_By_ID(p_iAuto_ID);
+		if (v_objData != null)
+			r_strDelete_Key = v_objData.Auto_ID.ToString();
+		// End tracking
+
+		v_objCtrXuat_Kho_Raw_Data.FQ_734_XKRD_sp_del_Delete_By_ID(p_iAuto_ID, r_strActive_User_Name, r_strActive_Function_Code);
+	}
+
+	void Check_Exception_Edit_Raw_Mode()
+	{
+		if (r_strError == CCommonFunction.Set_Error_MessageBox(""))
+		{
+			r_strError = "";
+		}
+	}
+}
+

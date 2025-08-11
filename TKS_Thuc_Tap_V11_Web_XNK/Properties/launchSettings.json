@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "TKS_Thuc_Tap_V11_Web_XNK": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:4854;http://localhost:4855"
+    }
+  }
+}

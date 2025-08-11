@@ -1,0 +1,75 @@
+@using TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
+@using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
+@inherits FBase;
+
+@Layout_Default_Filter(grdData, "")
+<div style="padding-top: 10px;"></div>
+
+<div class="row">
+	<div class="col-lg-12">
+		@((MarkupString)r_strError)
+
+		<TelerikGrid Data="@m_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+			<GridExport>
+				<GridExcelExport FileName="Xuat_Kho_Raw_Data_Export" AllPages="true" />
+				<GridCsvExport FileName="Xuat_Kho_Raw_Data_Export" AllPages="true" />
+			</GridExport>
+			<GridColumns>
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2011", "grdData").Count > 0)
+				{
+					<FCommon_General_Col_Grid m_strFCode="2011" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+				}
+				else
+				{
+					<GridColumn Field="Ngay_Xuat_Kho_Text" Title="Ngày xuất" Width="100px"></GridColumn>
+					<GridColumn Field="So_Phieu_Xuat" Title="Số phiếu xuất" Width="100px"></GridColumn>
+					<GridColumn Field="Ma_San_Pham" Title="Mã sản phẩm" Width="100px"></GridColumn>
+					<GridColumn Field="Ten_San_Pham" Title="Tên sản phẩm" Width="200px"></GridColumn>
+					<GridColumn Field="SL_Xuat" Title="SL xuất" Width="100px"></GridColumn>
+					<GridColumn Field="Don_Gia_Xuat" Title="Đơn giá" Width="100px"></GridColumn>
+					<GridColumn Field="Tri_Gia" Title="Trị giá" Width="100px"></GridColumn>
+					<GridColumn Field="" Title=""><FooterTemplate Context="Footer"></FooterTemplate></GridColumn>
+				}
+			</GridColumns>
+		</TelerikGrid>
+	
+	</div>
+</div>
+
+@if (r_bIs_Show_Help_Guide == true)
+{
+	<FCommon_Help_Guide m_strFCode="@r_strActive_Function_Code" OnClose="@Close_Helpguide"></FCommon_Help_Guide>
+}
+
+@code {
+	public List<CXNK_Xuat_Kho_Raw_Data> m_arrData = new();
+	TelerikGrid<CXNK_Xuat_Kho_Raw_Data> grdData = new();
+
+	protected override void Init_Data()
+	{
+		r_bIs_Show_Tool = false;
+	}
+
+	protected override void Load_Data()
+	{
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrData = new();
+
+		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
+		Format_Grid(grdData);
+
+		m_arrData = v_objCtrData.F3003_sp_sel_List_XKRD_For_Form_List(r_objFilter.Date_From, r_objFilter.Date_To);
+	}
+
+	protected override void Delete_Data_Entry(long p_iAuto_ID)
+	{
+		CXNK_Xuat_Kho_Raw_Data_Controller v_objCtrData = new();
+
+		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
+		CXNK_Xuat_Kho_Raw_Data v_objData = v_objCtrData.FQ_734_XKRD_sp_sel_Get_By_ID(p_iAuto_ID);
+		if (v_objData != null)
+			r_strDelete_Key = v_objData.Auto_ID + "";
+		// End tracking
+
+		v_objCtrData.FQ_734_XKRD_sp_del_Delete_By_ID(p_iAuto_ID, r_strActive_User_Name, r_strActive_Function_Code);
+	}
+}

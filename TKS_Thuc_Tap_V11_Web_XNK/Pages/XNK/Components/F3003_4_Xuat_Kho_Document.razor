@@ -1,0 +1,90 @@
+﻿@using TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
+@using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
+@using Telerik.ReportViewer.Blazor
+@inherits FBase_Edit;
+
+<style>
+    #rv1 {
+        width: 1200px;
+        height: 600px;
+        background-color: white;
+    }
+
+    .F2008_4_Nhap_Kho_Document_container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1030;
+        background-color: rgba(255,255,255,0.3);
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .trv-pages-area.interactive .trv-page-container .trv-page-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+</style>
+
+<div class="F2008_4_Nhap_Kho_Document_container">
+
+    <div class="modal-header bg-light" style="padding: 20px; width: 1200px;">
+        <h5 class="modal-title">@Get_Language_Data_Field("Thông tin")</h5>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="Modal_Cancel_Private">
+        </button>
+    </div>
+
+    <ReportViewer ViewerId="rv1"
+                  ServiceUrl="/api/reports"
+                  ReportSource="@(new ReportSourceOptions()
+                  {
+                      Report = "rpt3003_A_M01_Phieu_Xuat_Kho_Default.trdp",
+                      Parameters = new Dictionary<string, object>
+                        {
+                             {"p_iXuat_Kho_ID", r_iAuto_ID},
+                             {"p_strTen_Kho", m_objXuat_Kho.Ten_Kho},
+                             {"p_strNgay_Xuat_Kho", m_objXuat_Kho.Ngay_Xuat_Kho?.ToString("'Ngày ' dd ' tháng ' MM ' năm ' yyyy")},
+
+                        },
+                  })"
+                  Parameters="@(new ParametersOptions { Editors = new EditorsOptions { MultiSelect = EditorType.ComboBox, SingleSelect = EditorType.ComboBox } })"
+                  ScaleMode="@(ScaleMode.Specific)"
+                  Scale="1.0" />
+</div>
+
+@code {
+    [Parameter]
+    public bool m_bIs_Show_Document { set; get; }
+
+    [Parameter]
+    public EventCallback<CEvent_Call_Back> m_CbOnClose_From_Parent { get; set; }
+
+    public CXNK_Xuat_Kho m_objXuat_Kho { get; set; }
+
+    protected override void Init_Data()
+    {
+        CCache_Kho.Load_Cache_DM_Kho();
+        CXNK_Xuat_Kho_Controller v_objCtrXuat_Kho = new();
+        m_objXuat_Kho = v_objCtrXuat_Kho.FQ_728_XK_sp_sel_Get_By_ID(r_iAuto_ID);
+        m_objXuat_Kho.Ten_Kho = CCache_Kho.Get_Data_By_ID(m_objXuat_Kho.Kho_ID).Ten_Kho ?? "";
+        
+    }
+
+    Task Modal_Cancel_Private()
+    {
+        var v_evt = new CEvent_Call_Back
+        {
+            Message_ID = (int)EModal_Result.Close_Cancel
+        };
+        return m_CbOnClose_From_Parent.InvokeAsync(v_evt);
+    }
+
+}
