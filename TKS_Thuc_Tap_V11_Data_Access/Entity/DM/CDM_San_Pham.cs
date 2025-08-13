@@ -22,8 +22,16 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.DM
         private DateTime? m_dtmLast_Updated;
         private string m_strLast_Updated_By;
         private string m_strLast_Updated_By_Function;
-        public string m_strTen_Loai_San_Pham { get; set; }
-        public string m_strTen_Don_Vi_Tinh { get; set; }
+
+        // thuoc tinh cho phan in phieu bao cao
+        private string m_strTen_Loai_San_Pham;
+        private string m_strTen_Don_Vi_Tinh;
+
+        // thuoc tinh cho phan bao cao xuat nhap ton
+        private double m_dblSL_Dau_Ky;
+        private double m_dblSL_Cuoi_Ky;
+        private double m_dblSL_Nhap;
+        private double m_dblSL_Xuat;
 
         public CDM_San_Pham()
         {
@@ -225,6 +233,78 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.DM
             {
                 m_strTen_Don_Vi_Tinh = value.Trim();
             }
+        }
+
+        public double SL_Dau_Ky
+        {
+            get
+            {
+                return m_dblSL_Dau_Ky;
+            }
+            set
+            {
+                m_dblSL_Dau_Ky = value;
+            }
+        }
+
+        public double SL_Nhap
+        {
+            get
+            {
+                return m_dblSL_Nhap;
+            }
+            set
+            {
+                m_dblSL_Nhap = value;
+            }
+        }
+        public double SL_Xuat
+        {
+            get
+            {
+                return m_dblSL_Xuat;
+            }
+            set
+            {
+                m_dblSL_Xuat = value;
+            }
+        }
+        public double SL_Cuoi_Ky
+        {
+            get
+            {
+                return m_dblSL_Cuoi_Ky;
+            }
+            set
+            {
+                m_dblSL_Cuoi_Ky = value;
+            }
+        }
+
+        public bool IsValid(out string p_strMessage)
+        {
+            if (string.IsNullOrEmpty(m_strMa_San_Pham))
+            {
+                p_strMessage = "Mã sản phẩm không được để trống.";
+                return false;
+            }
+            if (string.IsNullOrEmpty(m_strTen_San_Pham))
+            {
+                p_strMessage = "Tên sản phẩm không được để trống.";
+                return false;
+            }
+            if (m_lngLoai_San_Pham_ID <= 0)
+            {
+                p_strMessage = "Loại sản phẩm không được để trống.";
+                return false;
+            }
+            if (m_lngDon_Vi_Tinh_ID <= 0)
+            {
+                p_strMessage = "Đơn vị tính không được để trống.";
+                return false;
+            }
+            p_strMessage = string.Empty;
+            return true;
         }
     }
 }

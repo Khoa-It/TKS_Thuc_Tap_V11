@@ -293,5 +293,6 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
             p_strErrorMessage = "";
             return true;
         }
+
     }
 }

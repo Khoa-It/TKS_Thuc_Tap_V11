@@ -1,13 +1,13 @@
 @inherits FBase;
 
-@Layout_Default_Filter(grdData, "")
+@Layout_Default_Filter(m_grdData, "")
 <div style="padding-top: 10px;"></div>
 
 <div class="row">
 	<div class="col-lg-12">
 		@((MarkupString)r_strError)
 
-		<TelerikGrid Data="@v_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+		<TelerikGrid Data="@m_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@m_grdData">
 			<GridExport>
 				<GridExcelExport FileName="Loai_San_Pham_Export" AllPages="true" />
 				<GridCsvExport FileName="Loai_San_Pham_Export" AllPages="true" />
@@ -39,14 +39,14 @@
 						</ul>
 					</Template>
 				</GridColumn>
-				@if (CCache_Grid_UI_Global.List_Data_By_Code("2002", "grdData").Count > 0)
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2002", "m_grdData").Count > 0)
 				{
-					<FCommon_General_Col_Grid m_strFCode="2002" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+					<FCommon_General_Col_Grid m_strFCode="2002" m_strTen_Grid="m_grdData"></FCommon_General_Col_Grid>
 				}
 				else
 				{
-					<GridColumn Field="Ma_LSP" Title="Ma_LSP" Width="100px"></GridColumn>
-					<GridColumn Field="Ten_LSP" Title="Ten_LSP" Width="200px"></GridColumn>
+					<GridColumn Field="Ma_LSP" Title="Mã loại sản phẩm" Width="100px"></GridColumn>
+					<GridColumn Field="Ten_LSP" Title="Tên loại sản phẩm " Width="200px"></GridColumn>
 					<GridColumn Field="Ghi_Chu" Title="Ghi Chú" Width="200px"></GridColumn>
 					<GridColumn Field="" Title=""><FooterTemplate Context="Footer"></FooterTemplate></GridColumn>
 				}
@@ -71,8 +71,8 @@
 }
 
 @code {
-	public List<CDM_Loai_San_Pham> v_arrData = new();
-	TelerikGrid<CDM_Loai_San_Pham> grdData = new();
+	public List<CDM_Loai_San_Pham> m_arrData = new();
+	TelerikGrid<CDM_Loai_San_Pham> m_grdData = new();
 
 	protected override void Init_Data()
 	{
@@ -84,9 +84,9 @@
 		CDM_Loai_San_Pham_Controller v_objCtrData = new();
 
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
-		Format_Grid(grdData);
+		Format_Grid(m_grdData);
 
-		v_arrData = v_objCtrData.FQ_122_LSP_sp_sel_List_By_Created(r_objFilter.Date_From, r_objFilter.Date_To);
+		m_arrData = v_objCtrData.FQ_122_LSP_sp_sel_List_By_Created(r_objFilter.Date_From, r_objFilter.Date_To);
 	}
 
 	protected override void Delete_Data_Entry(long p_iAuto_ID)

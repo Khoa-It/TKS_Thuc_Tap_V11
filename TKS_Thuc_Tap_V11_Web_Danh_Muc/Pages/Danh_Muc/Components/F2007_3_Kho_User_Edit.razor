@@ -68,17 +68,17 @@
 
 @code {
 	private CDM_Kho_User m_objData = new();
-	public long r_iKho_ID { get; set; }
-    public List<CDM_Kho> m_arrKho = new();
-    public List<CSys_Thanh_Vien> m_arrThanh_Vien = new();
+	public List<CDM_Kho> m_arrKho = new();
+	public List<CSys_Thanh_Vien> m_arrThanh_Vien = new();
 
 
 	protected override void Init_Data()
 	{
-        CCache_Kho.Load_Cache_DM_Kho();
-        m_arrKho = CCache_Kho.List_Data();
-        CCache_Thanh_Vien.Load_Cache_Thanh_Vien();
-        m_arrThanh_Vien = CCache_Thanh_Vien.List_Data();
+		CCache_Kho.Load_Cache_DM_Kho();
+		CCache_Thanh_Vien.Load_Cache_Thanh_Vien();
+        CCache_Kho_User.Load_Cache_DM_Kho_User();
+		m_arrKho = CCache_Kho.List_Data();
+		m_arrThanh_Vien = CCache_Thanh_Vien.List_Data();
 	}
 
 	protected override void Load_Data()
@@ -107,6 +107,8 @@
 		m_objData.Last_Updated_By = r_strActive_User_Name;
 		m_objData.Last_Updated_By_Function = r_strActive_Function_Code;
 
+		Check_Data();
+
 		m_objData.Auto_ID = r_iAuto_ID = v_objCtrData.FQ_117_KU_sp_ins_Insert(m_objData);
 
 		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
@@ -121,6 +123,8 @@
 		CDM_Kho_User_Controller v_objCtrData = new();
 		m_objData.Last_Updated_By = r_strActive_User_Name;
 		m_objData.Last_Updated_By_Function = r_strActive_Function_Code;
+		
+        Check_Data();
 
 		v_objCtrData.FQ_117_KU_sp_upd_Update(m_objData);
 
@@ -131,5 +135,13 @@
 		// End tracking
 
 		CCache_Kho_User.Update_Data(m_objData);
+	}
+
+	void Check_Data()
+	{
+		var v_objKho_User = CCache_Kho_User.Get_Data_By_Kho_ID_And_User_Code(m_objData.Kho_ID, m_objData.Ma_Dang_Nhap);
+        if (v_objKho_User != null) throw new Exception("Người dùng đã có trong kho này, vui lòng chọn người dùng khác hoặc kho khác.");
+        string v_strMessage = string.Empty;
+        if (!m_objData.IsValid(out v_strMessage)) throw new Exception(v_strMessage);
 	}
 }

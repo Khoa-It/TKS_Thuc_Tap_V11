@@ -1,17 +1,16 @@
 @using TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
 @using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
 @inherits FBase;
-@inject IJSRuntime JSRuntime
 
 
-@Layout_Default_Filter(grdData, "Phieu_Nhap_Kho_Template.xlsx")
+@Layout_Default_Filter(m_grdNhap_Kho, "Phieu_Nhap_Kho_Template.xlsx")
 <div style="padding-top: 10px;"></div>
 
 <div class="row">
 	<div class="col-lg-12">
 		@((MarkupString)r_strError)
 
-		<TelerikGrid Data="@m_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+		<TelerikGrid Data="@m_arrNhap_Kho" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@m_grdNhap_Kho">
 			<GridExport>
 				<GridExcelExport FileName="Nhap_Kho_Export" AllPages="true" />
 				<GridCsvExport FileName="Nhap_Kho_Export" AllPages="true" />
@@ -51,9 +50,9 @@
 						</ul>
 					</Template>
 				</GridColumn>
-				@if (CCache_Grid_UI_Global.List_Data_By_Code("2008", "grdData").Count > 0)
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2008", "m_grdNhap_Kho").Count > 0)
 				{
-					<FCommon_General_Col_Grid m_strFCode="2008" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+					<FCommon_General_Col_Grid m_strFCode="2008" m_strTen_Grid="m_grdNhap_Kho"></FCommon_General_Col_Grid>
 				}
 				else
 				{
@@ -103,8 +102,8 @@
 }
 
 @code {
-	public List<CXNK_Nhap_Kho> m_arrData = new();
-	TelerikGrid<CXNK_Nhap_Kho> grdData = new();
+	public List<CXNK_Nhap_Kho> m_arrNhap_Kho = new();
+	TelerikGrid<CXNK_Nhap_Kho> m_grdNhap_Kho = new();
 
 	// Biến dành cho việc hiển thị phiếu nhập
 	private bool m_bIs_Show_Document = false;
@@ -120,11 +119,11 @@
 	{
 		CXNK_Nhap_Kho_Controller v_objCtrData = new();
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
-		Format_Grid(grdData);
+		Format_Grid(m_grdNhap_Kho);
 
-		m_arrData = v_objCtrData.F3001_sp_sel_List_NK_By_Date_Only(r_objFilter.Date_From, r_objFilter.Date_To);
+		m_arrNhap_Kho = v_objCtrData.F3001_sp_sel_List_NK_By_Date_Only(r_objFilter.Date_From, r_objFilter.Date_To);
 
-		foreach (CXNK_Nhap_Kho item in m_arrData)
+		foreach (CXNK_Nhap_Kho item in m_arrNhap_Kho)
 		{
 			item.Ten_Kho = CCache_Kho.Get_Data_By_ID(item.Kho_ID).Ten_Kho ?? "";
 			item.Ten_NCC = CCache_NCC.Get_Data_By_ID(item.NCC_ID).Ten_NCC ?? "";
@@ -168,13 +167,12 @@
 			bool v_bIsColum1LackData = p_dtIO.Rows[v_i][1].ToString().Trim() == "";
 			bool v_bIsColum2LackData = p_dtIO.Rows[v_i][2].ToString().Trim() == "";
 			bool v_bIsColum3LackData = p_dtIO.Rows[v_i][3].ToString().Trim() == "";
-			bool v_bIsColum4LackData = p_dtIO.Rows[v_i][4].ToString().Trim() == "";
 			bool v_bIsColum6LackData = p_dtIO.Rows[v_i][5].ToString().Trim() == "";
 			bool v_bIsColum7LackData = p_dtIO.Rows[v_i][6].ToString().Trim() == "";
 			bool v_bIsColum8LackData = p_dtIO.Rows[v_i][7].ToString().Trim() == "";
 
-			bool v_bIsRowLackData = v_bIsColum0LackData || v_bIsColum1LackData || v_bIsColum2LackData || v_bIsColum3LackData || v_bIsColum4LackData || v_bIsColum6LackData || v_bIsColum7LackData || v_bIsColum8LackData;
-			bool v_bIsAtLeastOneColumnHasData = !v_bIsColum0LackData || !v_bIsColum1LackData || !v_bIsColum2LackData || !v_bIsColum3LackData || !v_bIsColum4LackData || !v_bIsColum6LackData || !v_bIsColum7LackData || !v_bIsColum8LackData;
+			bool v_bIsRowLackData = v_bIsColum0LackData || v_bIsColum1LackData || v_bIsColum2LackData || v_bIsColum3LackData || v_bIsColum6LackData || v_bIsColum7LackData || v_bIsColum8LackData;
+			bool v_bIsAtLeastOneColumnHasData = !v_bIsColum0LackData || !v_bIsColum1LackData || !v_bIsColum2LackData || !v_bIsColum3LackData || !v_bIsColum6LackData || !v_bIsColum7LackData || !v_bIsColum8LackData;
 
 			if (v_bIsRowLackData)
 			{
@@ -268,7 +266,7 @@
 				v_iPrevIndex++;
 			}
 
-			if (m_arrData.Exists(x=> x.So_Phieu_Nhap_Kho == v_objStorageNhap_Kho.So_Phieu_Nhap_Kho))
+			if (m_arrNhap_Kho.Exists(x=> x.So_Phieu_Nhap_Kho == v_objStorageNhap_Kho.So_Phieu_Nhap_Kho))
 				throw new Exception(CCommonFunction.Set_Error_MessageBox(Get_Language_Data_Field("Số phiếu nhập đã tồn tại")));
 
 			//tao ket noi transaction

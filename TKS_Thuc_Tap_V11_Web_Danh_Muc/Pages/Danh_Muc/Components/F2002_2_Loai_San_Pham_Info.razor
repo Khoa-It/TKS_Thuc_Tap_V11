@@ -39,14 +39,14 @@
 
 								<div class="row mb-3">
 									<div class="col-lg-11">
-										<label class="form-label-info">@Get_Language_Data_Field("Ma_LSP")</label><br />
+										<label class="form-label-info">@Get_Language_Data_Field("Mã LSP")</label><br />
 										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Ma_LSP, false)</span>
 									</div>
 								</div>
 
 								<div class="row mb-3">
 									<div class="col-lg-11">
-										<label class="form-label-info">@Get_Language_Data_Field("Ten_LSP")</label><br />
+										<label class="form-label-info">@Get_Language_Data_Field("Tên LSP")</label><br />
 										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Ten_LSP, false)</span>
 									</div>
 								</div>
@@ -125,10 +125,10 @@
 	protected override void Load_Data()
 	{
 		CDM_Loai_San_Pham_Controller v_objCtrData = new();
-		CLog_Record_Action_History_Controller v_objCtrRAH = new();
+		// CLog_Record_Action_History_Controller v_objCtrRAH = new();
 
 		m_objData = v_objCtrData.FQ_122_LSP_sp_sel_Get_By_ID(r_iAuto_ID);
 
-		m_arrRAH = v_objCtrRAH.FCommon_Sys_sp_sel_List_Log_Record_Action_History(r_iAuto_ID);
+		// m_arrRAH = v_objCtrRAH.FCommon_Sys_sp_sel_List_Log_Record_Action_History(r_iAuto_ID);
 	}
 }

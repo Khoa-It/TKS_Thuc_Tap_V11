@@ -201,5 +201,42 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
             }
         }
 
+        public bool IsValid(out string p_strMessage)
+        {
+            if (m_lngKho_ID <= 0)
+            {
+                p_strMessage = "Mã kho không hợp lệ.";
+                return false;
+            }
+            if (string.IsNullOrEmpty(m_strSo_Phieu_Xuat_Kho))
+            {
+                p_strMessage = "Số phiếu xuất kho không được trống";
+                return false;
+            }
+            if (!m_dtmNgay_Xuat_Kho.HasValue)
+            {
+                p_strMessage = "Ngày xuất Kho không được để trống.";
+                return false;
+            }
+            p_strMessage = string.Empty;
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is CXNK_Xuat_Kho other)
+            {
+                return Kho_ID == other.Kho_ID &&
+                       string.Equals(So_Phieu_Xuat_Kho, other.So_Phieu_Xuat_Kho, StringComparison.OrdinalIgnoreCase) &&
+                       Nullable.Equals(Ngay_Xuat_Kho, other.Ngay_Xuat_Kho);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Kho_ID, So_Phieu_Xuat_Kho?.ToLower(), Ngay_Xuat_Kho);
+        }
+
     }
 }

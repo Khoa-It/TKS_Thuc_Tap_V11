@@ -1,13 +1,13 @@
 @inherits FBase;
 
-@Layout_Default_Filter(grdData, "")
+@Layout_Default_Filter(m_grdData, "")
 <div style="padding-top: 10px;"></div>
 
 <div class="row">
 	<div class="col-lg-12">
 		@((MarkupString)r_strError)
 
-		<TelerikGrid Data="@v_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+		<TelerikGrid Data="@m_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@m_grdData">
 			<GridExport>
 				<GridExcelExport FileName="San_Pham_Export" AllPages="true" />
 				<GridCsvExport FileName="San_Pham_Export" AllPages="true" />
@@ -39,9 +39,9 @@
 						</ul>
 					</Template>
 				</GridColumn>
-				@if (CCache_Grid_UI_Global.List_Data_By_Code("2004", "grdData").Count > 0)
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2004", "m_grdData").Count > 0)
 				{
-					<FCommon_General_Col_Grid m_strFCode="2004" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+					<FCommon_General_Col_Grid m_strFCode="2004" m_strTen_Grid="m_grdData"></FCommon_General_Col_Grid>
 				}
 				else
 				{
@@ -73,8 +73,8 @@
 }
 
 @code {
-	public List<CDM_San_Pham> v_arrData = new();
-	TelerikGrid<CDM_San_Pham> grdData = new();
+	public List<CDM_San_Pham> m_arrData = new();
+	TelerikGrid<CDM_San_Pham> m_grdData = new();
 
 	protected override void Init_Data()
 	{
@@ -87,11 +87,11 @@
 		CDM_San_Pham_Controller v_objCtrData = new();
 
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
-		Format_Grid(grdData);
+		Format_Grid(m_grdData);
 
-		v_arrData = v_objCtrData.FQ_165_SP_sp_sel_List_By_Created(r_objFilter.Date_From, r_objFilter.Date_To);
+		m_arrData = v_objCtrData.FQ_165_SP_sp_sel_List_By_Created(r_objFilter.Date_From, r_objFilter.Date_To);
 
-		foreach (var item in v_arrData)
+		foreach (var item in m_arrData)
 		{
 			item.Ten_Loai_San_Pham = CCache_Loai_San_Pham.Get_Data_By_ID(item.Loai_San_Pham_ID)?.Ten_LSP ?? "";
 			item.Ten_Don_Vi_Tinh = CCache_Don_Vi_Tinh.Get_Data_By_ID(item.Don_Vi_Tinh_ID)?.Ten_Don_Vi_Tinh ?? "";

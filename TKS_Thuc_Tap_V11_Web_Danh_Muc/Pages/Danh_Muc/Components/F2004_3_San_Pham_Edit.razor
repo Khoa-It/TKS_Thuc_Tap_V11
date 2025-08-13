@@ -92,15 +92,15 @@
 
 @code {
 	private CDM_San_Pham m_objData = new();
-    private List<CDM_Don_Vi_Tinh> m_arr_Don_Vi_Tinh = new();
+	private List<CDM_Don_Vi_Tinh> m_arr_Don_Vi_Tinh = new();
 	private List<CDM_Loai_San_Pham> m_arr_Loai_San_Pham = new();
 
 	protected override void Init_Data()
 	{
-        CCache_Loai_San_Pham.Load_Cache_DM_Loai_San_Pham();
-        CCache_Don_Vi_Tinh.Load_Cache_DM_Don_Vi_Tinh();
-        m_arr_Loai_San_Pham = CCache_Loai_San_Pham.List_Data();
-        m_arr_Don_Vi_Tinh = CCache_Don_Vi_Tinh.List_Data();
+		CCache_Loai_San_Pham.Load_Cache_DM_Loai_San_Pham();
+		CCache_Don_Vi_Tinh.Load_Cache_DM_Don_Vi_Tinh();
+		m_arr_Loai_San_Pham = CCache_Loai_San_Pham.List_Data();
+		m_arr_Don_Vi_Tinh = CCache_Don_Vi_Tinh.List_Data();
 	}
 
 	protected override void Load_Data()
@@ -110,7 +110,7 @@
 
 		if (m_objData == null)
 			m_objData = new CDM_San_Pham();
-			
+
 		else
 		{
 			r_bUpdate = true;
@@ -129,6 +129,8 @@
 		m_objData.Last_Updated_By = r_strActive_User_Name;
 		m_objData.Last_Updated_By_Function = r_strActive_Function_Code;
 
+		if (!m_objData.IsValid(out r_strError)) throw new Exception(r_strError);
+
 		m_objData.Auto_ID = r_iAuto_ID = v_objCtrData.FQ_165_SP_sp_ins_Insert(m_objData);
 
 		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
@@ -144,6 +146,8 @@
 		m_objData.Last_Updated_By = r_strActive_User_Name;
 		m_objData.Last_Updated_By_Function = r_strActive_Function_Code;
 
+		if (!m_objData.IsValid(out r_strError)) throw new Exception(r_strError);
+
 		v_objCtrData.FQ_165_SP_sp_upd_Update(m_objData);
 
 		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
@@ -154,4 +158,5 @@
 
 		CCache_San_Pham.Update_Data(m_objData);
 	}
+
 }

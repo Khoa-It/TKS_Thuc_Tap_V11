@@ -1,13 +1,13 @@
 @inherits FBase;
 
-@Layout_Default_Filter(grdData, "")
+@Layout_Default_Filter(m_grdDon_Vi_Tinh, "")
 <div style="padding-top: 10px;"></div>
 
 <div class="row">
 	<div class="col-lg-12">
 		@((MarkupString)r_strError)
 
-		<TelerikGrid Data="@v_arrData" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+		<TelerikGrid Data="@m_arrDon_Vi_Tinh" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@m_grdDon_Vi_Tinh">
 			<GridExport>
 				<GridExcelExport FileName="Don_Vi_Tinh_Export" AllPages="true" />
 				<GridCsvExport FileName="Don_Vi_Tinh_Export" AllPages="true" />
@@ -39,14 +39,14 @@
 						</ul>
 					</Template>
 				</GridColumn>
-				@if (CCache_Grid_UI_Global.List_Data_By_Code("2001", "grdData").Count > 0)
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2001", "m_grdDon_Vi_Tinh").Count > 0)
 				{
-					<FCommon_General_Col_Grid m_strFCode="2001" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+					<FCommon_General_Col_Grid m_strFCode="2001" m_strTen_Grid="m_grdDon_Vi_Tinh"></FCommon_General_Col_Grid>
 				}
 				else
 				{
-					<GridColumn Field="Ten_Don_Vi_Tinh" Title="Tên Đơn Vị Tính" Width="200px"></GridColumn>
-					<GridColumn Field="Ghi_Chu" Title="Ghi Chú" Width="200px"></GridColumn>
+					<GridColumn Field="Ten_Don_Vi_Tinh" Title="@Get_Language_Data_Field("Tên Đơn Vị Tính")" Width="200px"></GridColumn>
+					<GridColumn Field="Ghi_Chu" Title="@Get_Language_Data_Field("Ghi Chú")" Width="200px"></GridColumn>
 					<GridColumn Field="" Title=""><FooterTemplate Context="Footer"></FooterTemplate></GridColumn>
 				}
 			</GridColumns>
@@ -70,8 +70,8 @@
 }
 
 @code {
-	public List<CDM_Don_Vi_Tinh> v_arrData = new();
-	TelerikGrid<CDM_Don_Vi_Tinh> grdData = new();
+	public List<CDM_Don_Vi_Tinh> m_arrDon_Vi_Tinh = new();
+	TelerikGrid<CDM_Don_Vi_Tinh> m_grdDon_Vi_Tinh = new();
 
 	protected override void Init_Data()
 	{
@@ -83,9 +83,9 @@
 		CDM_Don_Vi_Tinh_Controller v_objCtrData = new();
 
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
-		Format_Grid(grdData);
+		Format_Grid(m_grdDon_Vi_Tinh);
 
-		v_arrData = v_objCtrData.FQ_110_DVT_sp_sel_List_By_Created(r_objFilter.Date_From, r_objFilter.Date_To);
+		m_arrDon_Vi_Tinh = v_objCtrData.FQ_110_DVT_sp_sel_List_By_Created(r_objFilter.Date_From, r_objFilter.Date_To);
 	}
 
 	protected override void Delete_Data_Entry(long p_iAuto_ID)

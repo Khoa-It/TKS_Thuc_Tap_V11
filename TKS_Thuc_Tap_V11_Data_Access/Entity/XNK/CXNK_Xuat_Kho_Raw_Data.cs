@@ -28,7 +28,7 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
         private string m_strTen_San_Pham;
         private double m_dblTri_Gia;
 
-        
+
 
         public CXNK_Xuat_Kho_Raw_Data()
         {
@@ -232,6 +232,27 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
         {
             get { return m_dblSL_Xuat * m_dblDon_Gia_Xuat; }
             set { m_dblTri_Gia = value; }
+        }
+
+        public bool IsValid(out string p_strErrorMessage)
+        {
+            if (m_lngSan_Pham_ID <= 0)
+            {
+                p_strErrorMessage = "Trường sản phẩm bị trống hoặc mã sản phẩm không hợp lệ";
+                return false;
+            }
+            else if (m_dblSL_Xuat <= 0)
+            {
+                p_strErrorMessage = "Trường số lượng xuất không được nhỏ hơn hoặc bằng 0";
+                return false;
+            }
+            else if (m_dblDon_Gia_Xuat < 0)
+            {
+                p_strErrorMessage = "Trường đơn giá xuất không được nhỏ hơn 0";
+                return false;
+            }
+            p_strErrorMessage = "";
+            return true;
         }
     }
 }

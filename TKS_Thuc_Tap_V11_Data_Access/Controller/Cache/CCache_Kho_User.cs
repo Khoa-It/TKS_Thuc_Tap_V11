@@ -102,5 +102,14 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Controller.Cache
         {
             return Arr_Data;
         }
+
+        public static CDM_Kho_User Get_Data_By_Kho_ID_And_User_Code(long p_iKho_ID, string p_strUser_Code)
+        {
+            foreach (var item in Dic_Data_Code.Values)
+                if (item.Kho_ID == p_iKho_ID && p_strUser_Code.Equals(p_strUser_Code, StringComparison.Ordinal))
+                    return item;
+                
+            return null;
+        }
     }
 }

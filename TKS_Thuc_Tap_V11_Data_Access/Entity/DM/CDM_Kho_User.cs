@@ -184,5 +184,23 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.DM
                 m_strTen_Kho = value.Trim();
             }
         }
+
+        public bool IsValid(out string p_strMessage)
+        {
+            if (string.IsNullOrWhiteSpace(m_strMa_Dang_Nhap))
+            {
+                p_strMessage = "Mã đăng nhập không được để trống";
+                return false;
+            }
+
+            if (m_lngKho_ID <= 0)
+            {
+                p_strMessage = "Vui lòng chọn kho";
+                return false;
+            }
+
+            p_strMessage = string.Empty;
+            return true;
+        }
     }
 }

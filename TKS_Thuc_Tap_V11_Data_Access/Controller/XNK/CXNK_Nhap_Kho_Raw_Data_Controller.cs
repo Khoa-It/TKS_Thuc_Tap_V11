@@ -77,6 +77,35 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Controller.XNK
             return v_arrRes;
         }
 
+        public List<CXNK_Nhap_Kho_Raw_Data> F4005_sp_sel_List_NKRD_By_Created()
+        {
+            List<CXNK_Nhap_Kho_Raw_Data> v_arrRes = new List<CXNK_Nhap_Kho_Raw_Data>();
+            DataTable v_dt = new DataTable();
+
+            try
+            {
+                CSqlHelper.FillDataTable(CConfig.TKS_Thuc_Tap_V11_Conn_String, v_dt, "F4005_sp_sel_List_NKRD_By_Created");
+
+                foreach (DataRow v_row in v_dt.Rows)
+                {
+                    CXNK_Nhap_Kho_Raw_Data v_objRes = CUtility.Map_Row_To_Entity<CXNK_Nhap_Kho_Raw_Data>(v_row);
+                    v_arrRes.Add(v_objRes);
+                }
+            }
+
+            catch (Exception)
+            {
+                throw;
+            }
+
+            finally
+            {
+                v_dt.Dispose();
+            }
+
+            return v_arrRes;
+        }
+
         public List<CXNK_Nhap_Kho_Raw_Data> F3001_sp_sel_List_NKRD_By_Nhap_Kho_ID(long p_iNhap_Kho_ID)
         {
             List<CXNK_Nhap_Kho_Raw_Data> v_arrRes = new List<CXNK_Nhap_Kho_Raw_Data>();
