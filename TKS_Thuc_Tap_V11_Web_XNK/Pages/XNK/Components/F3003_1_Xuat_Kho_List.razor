@@ -2,14 +2,14 @@
 @using TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
 @inherits FBase;
 
-@Layout_Default_Filter(grdData, "Phieu_Xuat_Kho_Template.xlsx")
+@Layout_Default_Filter(m_grdData, "Phieu_Xuat_Kho_Template.xlsx")
 <div style="padding-top: 10px;"></div>
 
 <div class="row">
 	<div class="col-lg-12">
 		@((MarkupString)r_strError)
 
-		<TelerikGrid Data="@m_arrXuat_Kho" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@grdData">
+		<TelerikGrid Data="@m_arrXuat_Kho" Height="calc(100vh - 170px)" Resizable="true" Reorderable="true" @ref="@m_grdData">
 			<GridExport>
 				<GridExcelExport FileName="Xuat_Kho_Export" AllPages="true" />
 				<GridCsvExport FileName="Xuat_Kho_Export" AllPages="true" />
@@ -49,14 +49,15 @@
 						</ul>
 					</Template>
 				</GridColumn>
-				@if (CCache_Grid_UI_Global.List_Data_By_Code("2010", "grdData").Count > 0)
+				@if (CCache_Grid_UI_Global.List_Data_By_Code("2010", "m_grdData").Count > 0)
 				{
-					<FCommon_General_Col_Grid m_strFCode="2010" m_strTen_Grid="grdData"></FCommon_General_Col_Grid>
+					<FCommon_General_Col_Grid m_strFCode="2010" m_strTen_Grid="m_grdData"></FCommon_General_Col_Grid>
 				}
 				else
 				{
 					<GridColumn Field="So_Phieu_Xuat_Kho" Title="Số Phiếu Xuất Kho" Width="100px"></GridColumn>
-					<GridColumn Field="Ngay_Xuat_Kho" Title="Ngày Xuất Kho" Width="120px"></GridColumn>
+					<GridColumn Field="Ten_Kho" Title="Số Phiếu Xuất Kho" Width="100px"></GridColumn>
+					<GridColumn Field="Ngay_Xuat_Kho_Text" Title="Ngày Xuất Kho" Width="120px"></GridColumn>
 					<GridColumn Field="Ghi_Chu" Title="Ghi Chú" Width="200px"></GridColumn>
 					<GridColumn Field="" Title=""><FooterTemplate Context="Footer"></FooterTemplate></GridColumn>
 				}
@@ -100,14 +101,14 @@
 
 
 @code {
-	public List<CXNK_Xuat_Kho> m_arrXuat_Kho = new();
-	TelerikGrid<CXNK_Xuat_Kho> grdData = new();
-    public bool m_bIs_Show_Document { set; get; } = false;
+	private List<CXNK_Xuat_Kho> m_arrXuat_Kho = new();
+	private TelerikGrid<CXNK_Xuat_Kho> m_grdData = new();
+	private bool m_bIs_Show_Document { set; get; } = false;
 
 	protected override void Init_Data()
 	{
-        CCache_Kho.Load_Cache_DM_Kho();
-        CCache_San_Pham.Load_Cache_DM_San_Pham();
+		CCache_Kho.Load_Cache_DM_Kho();
+		CCache_San_Pham.Load_Cache_DM_San_Pham();
 	}
 
 	protected override void Load_Data()
@@ -115,9 +116,11 @@
 		CXNK_Xuat_Kho_Controller v_objCtrData = new();
 
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
-		Format_Grid(grdData);
+		Format_Grid(m_grdData);
 
 		m_arrXuat_Kho = v_objCtrData.F3003_sp_sel_List_XK_By_Date_Only(r_objFilter.Date_From, r_objFilter.Date_To);
+		foreach (var item in m_arrXuat_Kho)
+			item.Ten_Kho = CCache_Kho.Get_Data_By_ID(item.Kho_ID).Ten_Kho ?? "";
 	}
 
 	protected override void Delete_Data_Entry(long p_iAuto_ID)

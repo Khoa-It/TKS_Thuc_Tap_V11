@@ -100,7 +100,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 
-					<TelerikGrid Data="@v_arrNhapKhoRawData" Height="calc(100vh - 470px)" Resizable="true" Reorderable="true" @ref="@grdNhapKhoRawData">
+					<TelerikGrid Data="@m_arrNhap_Kho_Raw_Data" Height="calc(100vh - 470px)" Resizable="true" Reorderable="true" @ref="@m_grdNhap_Kho_Raw_Data">
 						@* <GridExport>
 							<GridExcelExport FileName="Nhap_Kho_Raw_Data_Export" AllPages="true" />
 							<GridCsvExport FileName="Nhap_Kho_Raw_Data_Export" AllPages="true" />
@@ -183,18 +183,18 @@
 
 @code {
 	private CXNK_Nhap_Kho m_objData = new();
-	public List<CXNK_Nhap_Kho_Raw_Data> v_arrNhapKhoRawData = new();
-	TelerikGrid<CXNK_Nhap_Kho_Raw_Data> grdNhapKhoRawData = new();
-	public List<CDM_NCC> m_arrNCC = new();
-	public List<CDM_Kho> m_arrKho = new();
+	private List<CXNK_Nhap_Kho_Raw_Data> m_arrNhap_Kho_Raw_Data = new();
+	private TelerikGrid<CXNK_Nhap_Kho_Raw_Data> m_grdNhap_Kho_Raw_Data = new();
+	private List<CDM_NCC> m_arrNCC = new();
+	private List<CDM_Kho> m_arrKho = new();
 	private bool m_bIs_Show_2009_3_Nhap_Kho_Raw_Data_Edit = false;
-	public bool m_isEditRawMode = false;
+	private bool m_isEditRawMode = false;
 
 	// index của mảng raw data nhập kho, dùng để tạo Auto_ID tạm thời cho các bản ghi mới
-	private int v_iIndex_Nhap_Kho_Raw = 1;
+	private int m_iIndex_Nhap_Kho_Raw = 1;
 
 	// Biến này dùng để lưu index của raw data nhập kho khi mở form hiệu chỉnh
-	public CXNK_Nhap_Kho_Raw_Data m_objObject_Delivery_For_Edit = new();
+	private CXNK_Nhap_Kho_Raw_Data m_objObject_Delivery_For_Edit = new();
 
 
 	protected override void Init_Data()
@@ -231,12 +231,12 @@
 		CXNK_Nhap_Kho_Raw_Data_Controller v_objCtrNhapKhoRawData = new();
 
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
-		Format_Grid(grdNhapKhoRawData);
+		Format_Grid(m_grdNhap_Kho_Raw_Data);
 
 		if (r_iAuto_ID != 0)
 		{
-			v_arrNhapKhoRawData = v_objCtrNhapKhoRawData.F3001_sp_sel_List_NKRD_By_Nhap_Kho_ID(r_iAuto_ID);
-			foreach (var item in v_arrNhapKhoRawData)
+			m_arrNhap_Kho_Raw_Data = v_objCtrNhapKhoRawData.F3001_sp_sel_List_NKRD_By_Nhap_Kho_ID(r_iAuto_ID);
+			foreach (var item in m_arrNhap_Kho_Raw_Data)
 			{
 				item.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(item.San_Pham_ID).Ten_San_Pham ?? "";
 			}
@@ -261,7 +261,7 @@
 
 		// Phần lưu thông tin raw data nhập kho - chi tiết phiếu nhập
 		CXNK_Nhap_Kho_Raw_Data_Controller v_objCtrNhapKhoRawData = new();
-		foreach (var item in v_arrNhapKhoRawData)
+		foreach (var item in m_arrNhap_Kho_Raw_Data)
 		{
 			item.Nhap_Kho_ID = r_iAuto_ID; // Gán ID phiếu nhập kho cho raw data
 			item.Last_Updated_By = r_strActive_User_Name;
@@ -294,12 +294,12 @@
 
 	void Open_2009_3_Nhap_Kho_Raw_Data_Edit(long p_iAuto_ID = 0)
 	{
-		
+
 		m_bIs_Show_2009_3_Nhap_Kho_Raw_Data_Edit = true;
 		if(r_iAuto_ID == 0) m_isEditRawMode = true;
 
 		if (p_iAuto_ID != 0)
-			m_objObject_Delivery_For_Edit = v_arrNhapKhoRawData.Find(x => x.Auto_ID == p_iAuto_ID);
+			m_objObject_Delivery_For_Edit = m_arrNhap_Kho_Raw_Data.Find(x => x.Auto_ID == p_iAuto_ID);
 
 		StateHasChanged();
 	}
@@ -318,18 +318,18 @@
 				CXNK_Nhap_Kho_Raw_Data m_objHandle = p_objEvent.Object_1 as CXNK_Nhap_Kho_Raw_Data;
 				if (m_objHandle.Auto_ID != 0)
 				{
-					CXNK_Nhap_Kho_Raw_Data v_objHandle = v_arrNhapKhoRawData.Find(x => x.Auto_ID == m_objHandle.Auto_ID);
+					CXNK_Nhap_Kho_Raw_Data v_objHandle = m_arrNhap_Kho_Raw_Data.Find(x => x.Auto_ID == m_objHandle.Auto_ID);
 					CUtility.Clone_Entity(m_objHandle, v_objHandle);
 					m_objObject_Delivery_For_Edit = new();
-					grdNhapKhoRawData.Rebind();
+					m_grdNhap_Kho_Raw_Data.Rebind();
 				}
 				else
 				{
 					m_objHandle.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(m_objHandle.San_Pham_ID).Ten_San_Pham ?? "";
 					// Tạo Auto_ID tạm thời để hiển thị trên grid
-					m_objHandle.Auto_ID = v_iIndex_Nhap_Kho_Raw++;
-					v_arrNhapKhoRawData.Add(m_objHandle);
-					grdNhapKhoRawData.Rebind();
+					m_objHandle.Auto_ID = m_iIndex_Nhap_Kho_Raw++;
+					m_arrNhap_Kho_Raw_Data.Add(m_objHandle);
+					m_grdNhap_Kho_Raw_Data.Rebind();
 				}
 			}
 			else
@@ -339,19 +339,19 @@
 				if (p_objEvent.Message_Description == "Add")
 				{
 					v_objReceiveFromParent.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(v_objReceiveFromParent.San_Pham_ID).Ten_San_Pham ?? "";
-					v_arrNhapKhoRawData.Add(v_objReceiveFromParent);
-					grdNhapKhoRawData.Rebind();
+					m_arrNhap_Kho_Raw_Data.Add(v_objReceiveFromParent);
+					m_grdNhap_Kho_Raw_Data.Rebind();
 				}
 				else
 				{
-					CXNK_Nhap_Kho_Raw_Data v_objHandle = v_arrNhapKhoRawData.Find(x => x.Auto_ID == v_objReceiveFromParent.Auto_ID);
+					CXNK_Nhap_Kho_Raw_Data v_objHandle = m_arrNhap_Kho_Raw_Data.Find(x => x.Auto_ID == v_objReceiveFromParent.Auto_ID);
 					CUtility.Clone_Entity(v_objReceiveFromParent, v_objHandle);
 					v_objHandle.Ten_San_Pham = CCache_San_Pham.Get_Data_By_ID(v_objHandle.San_Pham_ID).Ten_San_Pham ?? "";
 					m_objObject_Delivery_For_Edit = new();
-					grdNhapKhoRawData.Rebind();
+					m_grdNhap_Kho_Raw_Data.Rebind();
 				}
 			}
-			
+
 		}
 
 		m_bIs_Show_2009_3_Nhap_Kho_Raw_Data_Edit = false;
@@ -360,15 +360,32 @@
 	// hàm kiểm tra trước khi lưu dữ liệu
 	public async Task Check_Before_Save()
 	{
-        string v_strErrorMessage = "";
-        if (!m_objData.IsValid(out v_strErrorMessage)) 
+		string v_strErrorMessage = "";
+		if (!m_objData.IsValid(out v_strErrorMessage))
+		{
 			r_strError = CCommonFunction.Set_Error_MessageBox(v_strErrorMessage);
+			return;
+		}
 
-		if (v_arrNhapKhoRawData.Count == 0)
+		if (m_arrNhap_Kho_Raw_Data.Count == 0 && !r_bUpdate)
 		{
 			r_strError = CCommonFunction.Set_Error_MessageBox("Vui lòng thêm chi tiết phiếu nhập kho");
 			return;
 		}
+
+		CXNK_Nhap_Kho_Controller v_objCtrData = new();
+		List<CXNK_Nhap_Kho> v_arrNhap_Kho = v_objCtrData.F3001_sp_sel_List_NK_By_Created();
+
+		foreach (var item in v_arrNhap_Kho)
+		{
+			if ( item.So_Phieu_Nhap_Kho.Equals(m_objData.So_Phieu_Nhap_Kho, StringComparison.Ordinal) 
+				&& m_objData.Auto_ID != item.Auto_ID)
+			{
+				r_strError = CCommonFunction.Set_Error_MessageBox("Số phiếu nhập kho đã tồn tại");
+				return;
+			}
+		}
+				
 		await Save_Data();
 	}
 
@@ -376,9 +393,9 @@
 	{
 		if (m_isEditRawMode)
 		{
-			CXNK_Nhap_Kho_Raw_Data v_objHandle = v_arrNhapKhoRawData.Find(x => x.Auto_ID == p_iAuto_ID);
-			v_arrNhapKhoRawData.Remove(v_objHandle);
-			grdNhapKhoRawData.Rebind();
+			CXNK_Nhap_Kho_Raw_Data v_objHandle = m_arrNhap_Kho_Raw_Data.Find(x => x.Auto_ID == p_iAuto_ID);
+			m_arrNhap_Kho_Raw_Data.Remove(v_objHandle);
+			m_grdNhap_Kho_Raw_Data.Rebind();
 			throw new Exception("");
 		}
 

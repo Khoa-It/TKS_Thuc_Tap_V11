@@ -246,7 +246,7 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
                 p_strErrorMessage = "Trường số lượng xuất không được nhỏ hơn hoặc bằng 0";
                 return false;
             }
-            else if (m_dblDon_Gia_Xuat < 0)
+            else if (m_dblDon_Gia_Xuat <= 0)
             {
                 p_strErrorMessage = "Trường đơn giá xuất không được nhỏ hơn 0";
                 return false;

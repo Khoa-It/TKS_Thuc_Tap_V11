@@ -240,7 +240,11 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
 
         public bool IsValid(out string p_strMessage)
         {
-
+            if (string.IsNullOrWhiteSpace(m_strSo_Phieu_Nhap_Kho))
+            {
+                p_strMessage = "Số Phiếu Nhập Kho không được để trống.";
+                return false;
+            }
             if (m_lngKho_ID <= 0)
             {
                 p_strMessage = "Mã kho không hợp lệ.";
@@ -249,11 +253,6 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
             if (m_lngNCC_ID <= 0)
             {
                 p_strMessage = "Mã nhà cung cấp không hợp lệ.";
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(m_strSo_Phieu_Nhap_Kho))
-            {
-                p_strMessage = "Số Phiếu Nhập Kho không được để trống.";
                 return false;
             }
             if (!m_dtmNgay_Nhap_Kho.HasValue)

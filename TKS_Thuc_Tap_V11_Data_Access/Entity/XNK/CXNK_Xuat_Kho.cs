@@ -201,16 +201,24 @@ namespace TKS_Thuc_Tap_V11_Data_Access.Entity.XNK
             }
         }
 
+        public string Ngay_Xuat_Kho_Text
+        {
+            get
+            {
+                return m_dtmNgay_Xuat_Kho.HasValue ? m_dtmNgay_Xuat_Kho.Value.ToString("dd/MM/yyyy") : string.Empty;
+            }
+        }
+
         public bool IsValid(out string p_strMessage)
         {
-            if (m_lngKho_ID <= 0)
-            {
-                p_strMessage = "Mã kho không hợp lệ.";
-                return false;
-            }
             if (string.IsNullOrEmpty(m_strSo_Phieu_Xuat_Kho))
             {
                 p_strMessage = "Số phiếu xuất kho không được trống";
+                return false;
+            }
+            if (m_lngKho_ID <= 0)
+            {
+                p_strMessage = "Mã kho không hợp lệ.";
                 return false;
             }
             if (!m_dtmNgay_Xuat_Kho.HasValue)

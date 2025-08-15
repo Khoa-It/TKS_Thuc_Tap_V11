@@ -93,6 +93,7 @@
 	public EventCallback<CEvent_Call_Back> OnClose_2009 { get; set; }
 	[Parameter]
 	public bool m_isEditRawMode { get; set; }
+
 	private CXNK_Nhap_Kho_Raw_Data m_objData = new();
 	private List<CDM_San_Pham> m_arrSan_Pham = new();
 
@@ -100,7 +101,7 @@
 	public CXNK_Nhap_Kho_Raw_Data m_objObject_Delivery_For_Edit { get; set; }
 
 	// Biến dùng để trả ra hành động của người dùng là cập nhật hay là thêm mới cho form phiếu nhập
-	private string v_strMessage = string.Empty;
+	private string m_strMessage = string.Empty;
 
 	protected override void Init_Data()
 	{
@@ -152,7 +153,7 @@
 
 		// Đoạn code lưu key cho việc tracking log CRUD, vui lòng đừng xóa
 		r_strAdd_Key = m_objData.Auto_ID.ToString();
-		v_strMessage = "Add";
+		m_strMessage = "Add";
 		// End tracking
 	}
 
@@ -169,7 +170,7 @@
 		CUtility.Clone_Entity(m_objData, v_objClone);
 		r_objDes = v_objClone;
 		// End tracking
-		v_strMessage = "Update";
+		m_strMessage = "Update";
 	}
 
 	public Task Modal_Cancel_2009()
@@ -207,7 +208,7 @@
 			{
 				Message_ID = (int)EModal_Result.Close_And_Reload_Data,
 				Object_1 = m_objData,
-				Message_Description = v_strMessage
+				Message_Description = m_strMessage
 			};
 			await OnClose_2009.InvokeAsync(v_evt);
 		}

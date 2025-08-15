@@ -171,21 +171,10 @@
 
 	public async Task Save_Data_2011()
 	{
-		if (m_objXuat_Kho.San_Pham_ID == 0)
+		string v_strError = string.Empty;
+		if (!m_objXuat_Kho.IsValid(out v_strError))
 		{
-			r_strError = CCommonFunction.Set_Error_MessageBox("Vui lòng chọn sản phẩm");
-			return;
-		}
-
-		if (m_objXuat_Kho.SL_Xuat == 0)
-		{
-			r_strError = CCommonFunction.Set_Error_MessageBox("Số lượng xuất không được bỏ trống");
-			return;
-		}
-
-		if (m_objXuat_Kho.Don_Gia_Xuat == 0)
-		{
-			r_strError = CCommonFunction.Set_Error_MessageBox("Đơn giá xuất không được bỏ trống");
+            r_strError = CCommonFunction.Set_Error_MessageBox(v_strError);
 			return;
 		}
 
