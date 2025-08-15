@@ -49,6 +49,13 @@
 
 								<div class="row mb-3">
 									<div class="col-lg-11">
+										<label class="form-label-info">@Get_Language_Data_Field("Kho")</label><br />
+										<span class="form-label">@CUtility.Get_Label_Text(@m_objXuat_Kho.Ten_Kho, false)</span>
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<div class="col-lg-11">
 										<label class="form-label-info">@Get_Language_Data_Field("Ngày xuất kho")</label><br />
 										<span class="form-label">@CUtility.Get_Label_Text(@m_objXuat_Kho.Ngay_Xuat_Kho, false)</span>
 									</div>
@@ -152,6 +159,7 @@
 	protected override void Init_Data()
 	{
 		CCache_San_Pham.Load_Cache_DM_San_Pham();
+        CCache_Kho.Load_Cache_DM_Kho();
 	}
 
 	protected override void Load_Data()
@@ -160,6 +168,7 @@
 		CLog_Record_Action_History_Controller v_objCtrRAH = new();
 
 		m_objXuat_Kho = v_objCtrXuat_Kho.FQ_728_XK_sp_sel_Get_By_ID(r_iAuto_ID);
+        m_objXuat_Kho.Ten_Kho = CCache_Kho.Get_Data_By_ID(m_objXuat_Kho.Kho_ID)?.Ten_Kho ?? "";
 
 		// m_arrRAH = v_objCtrRAH.FCommon_Sys_sp_sel_List_Log_Record_Action_History(r_iAuto_ID);
 

@@ -54,14 +54,14 @@
 								<div class="row mb-3">
 									<div class="col-lg-11">
 										<label class="form-label-info">@Get_Language_Data_Field("Loại sản phẩm")</label><br />
-										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Loai_San_Pham_ID, false)</span>
+										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Ten_Loai_San_Pham, false)</span>
 									</div>
 								</div>
 
 								<div class="row mb-3">
 									<div class="col-lg-11">
 										<label class="form-label-info">@Get_Language_Data_Field("Đơn vị tính")</label><br />
-										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Don_Vi_Tinh_ID, false)</span>
+										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Ten_Don_Vi_Tinh, false)</span>
 									</div>
 								</div>
 
@@ -136,12 +136,20 @@
 	private CDM_San_Pham m_objData = new();
 	private List<CLog_Record_Action_History> m_arrRAH = new();
 
+	protected override void Init_Data()
+	{
+		CCache_Loai_San_Pham.Load_Cache_DM_Loai_San_Pham();
+		CCache_Don_Vi_Tinh.Load_Cache_DM_Don_Vi_Tinh();
+	}
+
 	protected override void Load_Data()
 	{
 		CDM_San_Pham_Controller v_objCtrData = new();
 		CLog_Record_Action_History_Controller v_objCtrRAH = new();
 
 		m_objData = v_objCtrData.FQ_165_SP_sp_sel_Get_By_ID(r_iAuto_ID);
+        m_objData.Ten_Loai_San_Pham = CCache_Loai_San_Pham.Get_Data_By_ID(m_objData.Loai_San_Pham_ID).Ten_LSP ?? "";
+        m_objData.Ten_Don_Vi_Tinh = CCache_Don_Vi_Tinh.Get_Data_By_ID(m_objData.Don_Vi_Tinh_ID).Ten_Don_Vi_Tinh ?? "";
 
 		// m_arrRAH = v_objCtrRAH.FCommon_Sys_sp_sel_List_Log_Record_Action_History(r_iAuto_ID);
 	}

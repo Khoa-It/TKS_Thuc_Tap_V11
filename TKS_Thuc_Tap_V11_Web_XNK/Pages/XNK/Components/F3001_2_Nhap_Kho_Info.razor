@@ -48,8 +48,15 @@
 
 								<div class="row mb-3">
 									<div class="col-lg-11">
+										<label class="form-label-info">@Get_Language_Data_Field("Kho")</label><br />
+										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Ten_Kho, false)</span>
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<div class="col-lg-11">
 										<label class="form-label-info">@Get_Language_Data_Field("Nhà cung cấp")</label><br />
-										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.NCC_ID, false)</span>
+										<span class="form-label">@CUtility.Get_Label_Text(@m_objData.Ten_NCC, false)</span>
 									</div>
 								</div>
 
@@ -158,8 +165,14 @@
 @code {
 	private CXNK_Nhap_Kho m_objData = new();
 	private List<CLog_Record_Action_History> m_arrRAH = new();
-    private List<CXNK_Nhap_Kho_Raw_Data> m_arrNhap_Kho_Raw_Data = new();
+	private List<CXNK_Nhap_Kho_Raw_Data> m_arrNhap_Kho_Raw_Data = new();
 	private TelerikGrid<CXNK_Nhap_Kho_Raw_Data> m_grdNhap_Kho_Raw_Data = new();
+
+	protected override void Init_Data()
+	{
+        CCache_Kho.Load_Cache_DM_Kho();
+        CCache_NCC.Load_Cache_DM_NCC();
+	}
 
 	protected override void Load_Data()
 	{
@@ -168,6 +181,8 @@
         CCache_San_Pham.Load_Cache_DM_San_Pham();
 		
 		m_objData = v_objCtrData.FQ_718_NK_sp_sel_Get_By_ID(r_iAuto_ID);
+        m_objData.Ten_Kho = CCache_Kho.Get_Data_By_ID(m_objData.Kho_ID).Ten_Kho ?? "";
+        m_objData.Ten_NCC = CCache_NCC.Get_Data_By_ID(m_objData.NCC_ID).Ten_NCC ?? "";
 
 		// m_arrRAH = v_objCtrRAH.FCommon_Sys_sp_sel_List_Log_Record_Action_History(r_iAuto_ID);
 
