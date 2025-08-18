@@ -60,7 +60,7 @@
 		//Format lại grid đúng chuẩn, Đặt trước hàm load dữ liệu vì nó sẽ chạy nhanh hơn
 		Format_Grid(m_grdNhap_Kho_Raw_Data);
 
-		m_arrNhap_Kho_Raw_Data = v_objCtrData.F3001_sp_sel_List_NKRD_For_Form_List(r_objFilter.Date_From, r_objFilter.Date_To);
+		m_arrNhap_Kho_Raw_Data = v_objCtrData.F3001_sp_sel_List_NKRD_For_Form_List_By_Date(r_objFilter.Date_From, r_objFilter.Date_To);
 	}
 
 	protected override void Delete_Data_Entry(long p_iAuto_ID)
